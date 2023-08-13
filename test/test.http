@@ -1,0 +1,7 @@
+POST localhost:8080/add-new-habit
+Content-Type: application/json
+
+{
+  "name": "test231 habit",
+  "user_id": "123441562"
+}
