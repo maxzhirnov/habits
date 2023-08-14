@@ -1,12 +1,9 @@
 package handlers
 
 import (
-	botapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	tele "gopkg.in/telebot.v3"
 )
 
-type PingCommand struct {
-}
-
-func (c *PingCommand) Execute(update *botapi.Update) (string, error) {
-	return "pong", nil
+func Hello(c tele.Context) error {
+	return c.Send("Pong")
 }

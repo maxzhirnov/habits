@@ -12,7 +12,7 @@ func main() {
 	cfg.Parse()
 
 	apiUrl := fmt.Sprintf("http://%s:%d/", cfg.Client.Host, cfg.Client.Port)
-	bot, err := telegram.NewBot(cfg.Client.TelegramToken, apiUrl)
+	bot, err := telegram.NewTeleBot(cfg.Client.TelegramToken, apiUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
