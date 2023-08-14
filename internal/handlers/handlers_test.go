@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"github.com/labstack/echo/v4"
 	"github.com/maxzhirnov/habits/internal/models"
 	"github.com/stretchr/testify/assert"
@@ -44,6 +45,19 @@ func TestAddNewHabitHandler(t *testing.T) {
 				"userID":    "123",
 			},
 		},
+		{
+			name:        "Bad JSON",
+			requestBody: `{"name": "Run", "user_id": "123"`,
+			mockAppService: func() ApplicationService {
+				m := &MockAppService{}
+				m.On("AddNewHabit", mock.Anything).Return(errors.New("error binding json"))
+				return m
+			},
+			expectedStatus: http.StatusBadRequest,
+			expectedBody: map[string]interface{}{
+				"message": "error binding json",
+			},
+		},
 		// Add other test cases as needed
 	}
 
@@ -59,9 +73,20 @@ func TestAddNewHabitHandler(t *testing.T) {
 			if err := handler.AddNewHabitHandler(c); err != nil && tt.expectedStatus != http.StatusBadRequest {
 				t.Error(err)
 			} else {
+				var httpError *echo.HTTPError
+				ok := errors.As(err, &httpError)
+				if ok {
+					rec.Code = httpError.Code
+					rec.Body = bytes.NewBufferString(httpError.Message.(string))
+				} else {
+					t.Fatal("Handler error is not an echo.HTTPError")
+				}
 				assert.Equal(t, tt.expectedStatus, rec.Code)
 				var responseBody map[string]interface{}
-				json.Unmarshal(rec.Body.Bytes(), &responseBody)
+				err := json.Unmarshal(rec.Body.Bytes(), &responseBody)
+				if err != nil {
+					return
+				}
 				assert.Equal(t, tt.expectedBody, responseBody)
 			}
 		})

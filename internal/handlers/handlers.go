@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"errors"
+	"net/http"
+
 	"github.com/labstack/echo/v4"
+	log "github.com/sirupsen/logrus"
+
 	"github.com/maxzhirnov/habits/internal/models"
 	"github.com/maxzhirnov/habits/internal/repos"
-	log "github.com/sirupsen/logrus"
-	"net/http"
 )
 
 type ApplicationService interface {

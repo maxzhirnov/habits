@@ -16,7 +16,7 @@ func main() {
 	cfg := config.New()
 	cfg.Parse()
 
-	mongodb := database.NewMongoConnection(cfg.MongoDBConnection, "habits")
+	mongodb := database.NewMongoConnection(cfg.Server.MongoDBConnection, "habits")
 	if err := mongodb.Connect(); err != nil {
 		log.Fatal(err)
 	}

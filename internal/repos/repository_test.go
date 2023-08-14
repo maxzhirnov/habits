@@ -1,6 +1,7 @@
 package repos
 
 import (
+	"context"
 	"errors"
 	"github.com/maxzhirnov/habits/internal/models"
 	"github.com/stretchr/testify/assert"
@@ -12,12 +13,12 @@ type MockDB struct {
 	mock.Mock
 }
 
-func (mdb *MockDB) Insert(collectionName string, document interface{}) (string, error) {
+func (mdb *MockDB) Insert(ctx context.Context, collectionName string, document interface{}) (string, error) {
 	args := mdb.Called(collectionName, document)
 	return args.String(0), args.Error(1)
 }
 
-func (mdb *MockDB) Exists(collectionName string, filters map[string]interface{}) (bool, error) {
+func (mdb *MockDB) Exists(ctx context.Context, collectionName string, filters map[string]interface{}) (bool, error) {
 	args := mdb.Called(collectionName, filters)
 	return args.Bool(0), args.Error(1)
 }
