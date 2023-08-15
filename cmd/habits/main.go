@@ -31,6 +31,6 @@ func main() {
 	e.Use(middleware.Recover())
 
 	e.POST("/add-new-habit", h.AddNewHabitHandler)
+	e.GET("/habits", h.ListHabits)
 	e.Logger.Fatal(e.Start(":8080"))
-
 }

@@ -8,6 +8,7 @@ import (
 
 type Repository interface {
 	CreateNewHabit(habit models.Habit) error
+	GetAllUsersHabits(userID string) ([]models.Habit, error)
 }
 
 type App struct {
@@ -20,7 +21,7 @@ func NewAppService(repo Repository) *App {
 	}
 }
 
-func (app *App) AddNewHabit(h models.Habit) error {
+func (app App) AddNewHabit(h models.Habit) error {
 	h.Tracking = map[time.Time]bool{
 		utils.DateOnly(time.Now()): false,
 	}
@@ -28,4 +29,8 @@ func (app *App) AddNewHabit(h models.Habit) error {
 		return err
 	}
 	return nil
+}
+
+func (app App) GetAllUserHabits(userID string) ([]models.Habit, error) {
+	return app.Repo.GetAllUsersHabits(userID)
 }

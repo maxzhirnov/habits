@@ -10,43 +10,37 @@ import (
 
 func AddNewHabit(apiUrl string) func(c tele.Context) error {
 	return func(c tele.Context) error {
-		url := apiUrl + "add-new-habit"
-		res := ""
+		var (
+			res       = ""
+			url       = apiUrl + "add-new-habit"
+			habitName = c.Message().Payload
+			userID    = c.Sender().ID
+			client    = &http.Client{}
+			data      = []byte(fmt.Sprintf(`{"name": "%s", "user_id": "%d"}`, habitName, userID))
+		)
 
-		habitName := c.Message().Payload
-		//habitName = strings.TrimPrefix(habitName, "/add")
-		//habitName = strings.TrimSpace(habitName)
-
+		//If the command payload is empty giving user help message
 		if habitName == "" {
 			res = "To add new habit use \"/add habit name\", for example \"/add running every day\""
 			return c.Send(res)
 		}
 
-		userID := c.Sender().ID
-
-		// Создание JSON-тела запроса
-		data := []byte(fmt.Sprintf(`{
-		"name": "%s",
-		"user_id": "%d"
-	}`, habitName, userID))
-
+		//Trying to sava new habit item via API call
 		req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
 		if err != nil {
 			return err
 		}
-
-		// Установка заголовка Content-Type
 		req.Header.Set("Content-Type", "application/json")
-
-		client := &http.Client{}
 		resp, err := client.Do(req)
 		if err != nil {
 			return err
 		}
 		defer resp.Body.Close()
 
+		//Handling response codes
 		switch resp.StatusCode {
 		default:
+			//TODO: should something be sent to the user here?
 			return fmt.Errorf("unexpected response status: %s", resp.Status)
 		case http.StatusOK:
 			res = fmt.Sprintf("New habit added: \"%s\"", habitName)
@@ -60,7 +54,5 @@ func AddNewHabit(apiUrl string) func(c tele.Context) error {
 		}
 
 		return c.Send(res)
-
-		return c.Send("Pong")
 	}
 }

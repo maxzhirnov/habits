@@ -5,3 +5,9 @@ Content-Type: application/json
   "name": "tessst231 habit",
   "user_id": "123441562"
 }
+
+### list habits for userid
+GET localhost:8080/habits?userid=365904
+
+### list habits no userid
+GET localhost:8080/habits

@@ -74,3 +74,30 @@ func (mc *MongoConnection) Exists(ctx context.Context, collectionName string, fi
 
 	return count > 0, nil
 }
+
+func (mc *MongoConnection) GetAll(ctx context.Context, collectionName string, filter map[string]interface{}) ([]interface{}, error) {
+	collection := mc.getCollection(collectionName)
+
+	// Преобразуем фильтр в bson.M, что на самом деле является псевдонимом для map[string]interface{}
+	bsonFilter := bson.M(filter)
+
+	cursor, err := collection.Find(ctx, bsonFilter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var results []interface{}
+	for cursor.Next(ctx) {
+		var item interface{}
+		if err = cursor.Decode(&item); err != nil {
+			return nil, err
+		}
+		results = append(results, item)
+	}
+	if err = cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}

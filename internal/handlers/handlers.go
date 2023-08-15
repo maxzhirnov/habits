@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -13,6 +14,7 @@ import (
 
 type ApplicationService interface {
 	AddNewHabit(habit models.Habit) error
+	GetAllUserHabits(userID string) ([]models.Habit, error)
 }
 
 type Handlers struct {
@@ -52,4 +54,18 @@ func (h *Handlers) AddNewHabitHandler(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusOK, map[string]interface{}{"message": "success", "habitName": habit.Name, "userID": dto.UserID})
+}
+
+func (h *Handlers) ListHabits(e echo.Context) error {
+	params := e.QueryParams()
+	userID := params.Get("userid")
+	if userID == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("you need to provide userid"))
+	}
+	habits, err := h.ApplicationService.GetAllUserHabits(userID)
+	if err != nil {
+		return err
+	}
+
+	return e.JSON(http.StatusOK, habits)
 }
