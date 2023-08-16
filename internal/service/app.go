@@ -1,4 +1,4 @@
-package services
+package service
 
 import (
 	"github.com/maxzhirnov/habits/internal/models"
@@ -9,21 +9,24 @@ import (
 type Repository interface {
 	CreateNewHabit(habit models.Habit) error
 	GetAllUsersHabits(userID string) ([]models.Habit, error)
+	MarkHabitChecked(habit models.Habit) error
 }
 
 type App struct {
 	Repo Repository
 }
 
-func NewAppService(repo Repository) *App {
+func NewApp(repo Repository) *App {
 	return &App{
 		Repo: repo,
 	}
 }
 
 func (app App) AddNewHabit(h models.Habit) error {
+	h.Streak = 0
+	date := utils.DateOnly(time.Now())
 	h.Tracking = map[time.Time]bool{
-		utils.DateOnly(time.Now()): false,
+		date: false,
 	}
 	if err := app.Repo.CreateNewHabit(h); err != nil {
 		return err
@@ -33,4 +36,8 @@ func (app App) AddNewHabit(h models.Habit) error {
 
 func (app App) GetAllUserHabits(userID string) ([]models.Habit, error) {
 	return app.Repo.GetAllUsersHabits(userID)
+}
+
+func (app App) MarkHabitChecked(h models.Habit) error {
+	return app.Repo.MarkHabitChecked(h)
 }

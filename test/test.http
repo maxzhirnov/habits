@@ -11,3 +11,12 @@ GET localhost:8080/habits?userid=365904
 
 ### list habits no userid
 GET localhost:8080/habits
+
+### mark checked
+POST localhost:8080/mark
+Content-Type: application/json
+
+{
+  "id": "64dc99f4d0faabe29a87a060",
+  "user_id": "365904"
+}

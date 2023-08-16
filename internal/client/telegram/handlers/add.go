@@ -15,8 +15,9 @@ func AddNewHabit(apiUrl string) func(c tele.Context) error {
 			url       = apiUrl + "add-new-habit"
 			habitName = c.Message().Payload
 			userID    = c.Sender().ID
+			date      = c.Message().Time()
 			client    = &http.Client{}
-			data      = []byte(fmt.Sprintf(`{"name": "%s", "user_id": "%d"}`, habitName, userID))
+			data      = []byte(fmt.Sprintf(`{"name": "%s", "user_id": "%d", "created": "%s"}`, habitName, userID, date))
 		)
 
 		//If the command payload is empty giving user help message

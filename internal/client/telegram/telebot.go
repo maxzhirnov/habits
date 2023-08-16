@@ -33,6 +33,9 @@ func NewTeleBot(token, apiUrl string) (*TeleBot, error) {
 func (b TeleBot) Run() {
 	b.Handle("/ping", handlers.Hello)
 	b.Handle("/add", handlers.AddNewHabit(b.ApiUrl))
+	b.Handle("/list", handlers.ListHabits(b.ApiUrl))
+	b.Handle("/check", handlers.TrackHabitButtons(b.ApiUrl))
+	b.Handle(tele.OnCallback, handlers.TrackHabitCallback(b.ApiUrl))
 
 	b.Start()
 }
